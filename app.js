@@ -5,11 +5,13 @@ var Controller = (function(UICtrl, appCtrl){
         values: []
     };
 
+    let delayTime = 5;
+
     let generateRandomizedGraph = function(){
         let line;
         let arr = [];
         // generate array of values
-        for(let i = 0; i<=10; i++){
+        for(let i = 0; i<=50; i++){
             arr.push(i);
         }
 
@@ -43,17 +45,61 @@ var Controller = (function(UICtrl, appCtrl){
             index: line2.index,
             value: line1.value
         }
+
+        return new Promise((resolve) => {
+            UICtrl.drawMarkedLine(line1);
+            UICtrl.drawMarkedLine(line2);
+        
+            setTimeout(() =>{
+                UICtrl.deleteLine(line1);
+                UICtrl.deleteLine(line2);
+                resolve();
+            }, delayTime)
+        })
+        .then(()=>{
+            return new Promise((resolve)=>{
+                setTimeout(()=>{
+                    // move the line to different index
+                    newLine1 = { 
+                        index: line1.index,
+                        value: line2.value
+                    }
+
+                    UICtrl.drawMarkedLine(newLine1);
+
+                    newLine2 = {
+                        index: line2.index,
+                        value: line1.value
+                    }
+                    UICtrl.drawMarkedLine(newLine2);
+                    resolve();
+                }, delayTime )
+            });
+        }).then(()=>{
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    UICtrl.drawLine(newLine1);
+                    UICtrl.drawLine(newLine2);
+                    console.log('FINISHED');
+                    resolve();
+                }, delayTime );
+                console.log('FINISHED');
+
+            });
+        });
+
         
     }
     let bubbleSort = async function(){
         const length = data.values.length;
         
         
-        for(let i = 0; i < 1; i++){
-            for(let j = 0; j < length - 2; j++){
+        for(let i = 0; i < length ; i++){
+            for(let j = 0; j < length - 1; j++){
                 if(data.values[j].value > data.values[j + 1].value){
-                   await UICtrl.swap(data.values[j], data.values[j+1]);
-                   swap(data.values[j], data.values[j+1]);
+                    console.log(j);
+                    await swap(data.values[j], data.values[j+1]);
+                    console.log('PASSED CHECKPOINT');
                 }
             }
         }
@@ -63,7 +109,7 @@ var Controller = (function(UICtrl, appCtrl){
 
     return{
         init: function(){
-            UICtrl.initCanvas(0, 10, 10);
+            UICtrl.initCanvas(0, 50, 50);
             
             generateRandomizedGraph();
             

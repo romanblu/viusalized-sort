@@ -100,9 +100,8 @@ var UIController = (function(){
                         this.drawLine(newLine1);
                         this.drawLine(newLine2);
                         console.log('FINISHED');
-
+                        resolve();
                     }, delayTime );
-                    console.log('FINISHED');
 
                 });
             });
