@@ -13,7 +13,7 @@ var UIController = (function(){
     return {
         initCanvas: function(minRange, maxRange, numOfValues){ // TODO: Add optional size of the canvas
             mainContent.style.height = '500px';
-            mainContent.style.marginTop = '50px';
+            mainContent.style.marginTop = '25px';
 
             canvas.width = canvas.parentNode.clientWidth;
             canvas.height = canvas.parentNode.clientHeight;

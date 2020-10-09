@@ -4,6 +4,10 @@ var Controller = (function(UICtrl, appCtrl){
         values: []
     };
 
+    const minRange = 0;
+    const maxRange = 200;
+    const numOfValues = 200;
+
     let generateRandomizedGraph = function(){
         let line;
         let arr = [];
@@ -30,12 +34,21 @@ var Controller = (function(UICtrl, appCtrl){
     };
     
     let setupEventListeners = function(){
-        document.querySelector('.btn').addEventListener('click', function(){
-            heapSort(); 
-            console.log(data.values);
+        document.querySelector('.btn-bubble').addEventListener('click', bubbleSort);
+
+        document.querySelector('.btn-quick').addEventListener('click', function(){
+            quickSort(0, data.values.length - 1);
         });
 
-        // document.querySelector('.btn').addEventListener('click', quickSort);
+        document.querySelector('.btn-insertion').addEventListener('click', insertionSort)
+          
+        document.querySelector('.btn-heap').addEventListener('click', heapSort); 
+    
+        document.querySelector('.btn-restart').addEventListener('click', function(){
+            UICtrl.initCanvas(minRange, maxRange, numOfValues);
+            generateRandomizedGraph();
+
+        }); 
 
     };
 
@@ -205,7 +218,7 @@ var Controller = (function(UICtrl, appCtrl){
 
     return{
          init: function(){
-            UICtrl.initCanvas(0, 200, 200);
+            UICtrl.initCanvas(minRange, maxRange, numOfValues);
             
             generateRandomizedGraph();
             
