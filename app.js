@@ -1,5 +1,4 @@
 var Controller = (function(UICtrl, appCtrl){
-    // Initialize a canvas and the range of values for the size of the lines
 
     data = {
         values: []
@@ -11,7 +10,7 @@ var Controller = (function(UICtrl, appCtrl){
         let line;
         let arr = [];
         // generate array of values
-        for(let i = 0; i<=50; i++){
+        for(let i = 1; i<=200; i++){
             arr.push(i);
         }
 
@@ -33,7 +32,11 @@ var Controller = (function(UICtrl, appCtrl){
     };
     
     let setupEventListeners = function(){
-        document.querySelector('.btn').addEventListener('click', bubbleSort);
+        document.querySelector('.btn').addEventListener('click', function(){
+            quickSort(0, data.values.length-1); 
+        });
+
+        // document.querySelector('.btn').addEventListener('click', bubbleSort);
     };
 
     function swap(line1, line2){
@@ -46,70 +49,70 @@ var Controller = (function(UICtrl, appCtrl){
             value: line1.value
         }
 
-        return new Promise((resolve) => {
-            UICtrl.drawMarkedLine(line1);
-            UICtrl.drawMarkedLine(line2);
-        
-            setTimeout(() =>{
-                UICtrl.deleteLine(line1);
-                UICtrl.deleteLine(line2);
-                resolve();
-            }, delayTime)
-        })
-        .then(()=>{
-            return new Promise((resolve)=>{
-                setTimeout(()=>{
-                    // move the line to different index
-                    newLine1 = { 
-                        index: line1.index,
-                        value: line2.value
-                    }
-
-                    UICtrl.drawMarkedLine(newLine1);
-
-                    newLine2 = {
-                        index: line2.index,
-                        value: line1.value
-                    }
-                    UICtrl.drawMarkedLine(newLine2);
-                    resolve();
-                }, delayTime )
-            });
-        }).then(()=>{
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    UICtrl.drawLine(newLine1);
-                    UICtrl.drawLine(newLine2);
-                    console.log('FINISHED');
-                    resolve();
-                }, delayTime );
-                console.log('FINISHED');
-
-            });
-        });
-
         
     }
     let bubbleSort = async function(){
         const length = data.values.length;
         
-        
         for(let i = 0; i < length ; i++){
             for(let j = 0; j < length - 1; j++){
                 if(data.values[j].value > data.values[j + 1].value){
-                    console.log(j);
-                    await swap(data.values[j], data.values[j+1]);
-                    console.log('PASSED CHECKPOINT');
+                    await UICtrl.swap(data.values[j], data.values[j+1]);
+                    swap(data.values[j], data.values[j+1]);
                 }
             }
         }
 
-        console.log(data.values);
     };
+
+    quickSort = async function(start, end){
+        if(start < end){
+            let partitionIndex;
+            partFulfilled = await partition(data.values, start, end);
+            console.log(partFulfilled);
+            // partFulfilled.then((pi) => {
+            //     partitionIndex = pi;
+            // }).catch();
+            console.log('DONE TOO');
+
+            await quickSort(start, partFulfilled - 1);
+            await quickSort(partFulfilled + 1, end);
+        }
+
+        async function partition(arr, start, end){
+            pivot = arr[end];
+            i = start - 1 // Index of smallest element
+            
+
+            for(let j = start; j <= end - 1; j++){
+
+                if(arr[j].value < pivot.value){
+                    i++;
+                    if(i !== j){
+                        await UICtrl.swap(arr[i], arr[j]);
+                        swap(arr[i], arr[j]);
+                    }
+                    //  await UICtrl.swap(arr[i], arr[j]);
+                    // swap(arr[i], arr[j]);
+
+                }
+            }
+            if(i !==  end - 1){
+                // await UICtrl.swap(arr[i + 1], arr[end]);
+                // swap(arr[i + 1], arr[end]);
+            }
+            await UICtrl.swap(arr[i + 1], arr[end]);
+            swap(arr[i + 1], arr[end]);
+
+            return i+1;
+        }
+        console.log(data.values);
+        
+    }
 
     return{
         init: function(){
-            UICtrl.initCanvas(0, 50, 50);
+            UICtrl.initCanvas(0, 200, 200);
             
             generateRandomizedGraph();
             

@@ -7,7 +7,7 @@ var UIController = (function(){
     const markedLineColor = 'rgb(255, 0, 0)';
     const lineWidth = 5;
 
-    const delayTime = 500;
+    const delayTime = 2;
 
 
     return {
@@ -65,7 +65,7 @@ var UIController = (function(){
         },
         swap: function(line1, line2){
 
-            return new Promise((resolve) => {
+            return new Promise((resolve, reject) => {
                 this.drawMarkedLine(line1);
                 this.drawMarkedLine(line2);
             
@@ -83,7 +83,6 @@ var UIController = (function(){
                             index: line1.index,
                             value: line2.value
                         }
-
                         this.drawMarkedLine(newLine1);
 
                         newLine2 = {
@@ -99,11 +98,11 @@ var UIController = (function(){
                     setTimeout(() => {
                         this.drawLine(newLine1);
                         this.drawLine(newLine2);
-                        console.log('FINISHED');
                         resolve();
                     }, delayTime );
-
                 });
+            }).catch((err) =>{
+                console.log('ERROR ' + err)
             });
         
         },
