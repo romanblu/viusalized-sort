@@ -7,7 +7,7 @@ var UIController = (function(){
     const markedLineColor = 'rgb(255, 0, 0)';
     const lineWidth = 3;
 
-    const delayTime = 5;
+    let delayTime = 2;
 
 
     return {
@@ -31,6 +31,12 @@ var UIController = (function(){
             this.maxRange = maxRange;
             this.numOfValues = numOfValues;
             
+        },
+        speedUp: function(){
+            delayTime *= 0.5;
+        },
+        slowDown: function(){
+            delayTime *= 1.5;
         },
         drawLine: function(line){
             this.context.beginPath();

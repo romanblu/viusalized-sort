@@ -4,9 +4,14 @@ var Controller = (function(UICtrl, appCtrl){
         values: []
     };
 
+    // To know if we are in a middle of running, or if the graph is sorted 
+    let currentlyRunning = false;
+    let sorted = false;
+
     const minRange = 0;
     const maxRange = 200;
     const numOfValues = 200;
+
 
     let generateRandomizedGraph = function(){
         let line;
@@ -34,22 +39,43 @@ var Controller = (function(UICtrl, appCtrl){
     };
     
     let setupEventListeners = function(){
-        document.querySelector('.btn-bubble').addEventListener('click', bubbleSort);
-
-        document.querySelector('.btn-quick').addEventListener('click', function(){
-            quickSort(0, data.values.length - 1);
+        document.querySelector('.btn-bubble').addEventListener('click', function(){
+            if(!currentlyRunning && !sorted){
+                bubbleSort();
+            }
         });
 
-        document.querySelector('.btn-insertion').addEventListener('click', insertionSort)
+        document.querySelector('.btn-quick').addEventListener('click', function(){
+            if(!currentlyRunning && !sorted){
+                quickSort(0, data.values.length - 1);
+            }
+        });
+
+        document.querySelector('.btn-insertion').addEventListener('click', function(){
+            if(!currentlyRunning && !sorted){
+                insertionSort();
+            }
+        });
           
-        document.querySelector('.btn-heap').addEventListener('click', heapSort); 
+        document.querySelector('.btn-heap').addEventListener('click', function(){
+            if(!currentlyRunning && !sorted){
+                insertionSort();
+            }
+        }); 
     
         document.querySelector('.btn-restart').addEventListener('click', function(){
-            UICtrl.initCanvas(minRange, maxRange, numOfValues);
-            generateRandomizedGraph();
-
+            // UICtrl.initCanvas(minRange, maxRange, numOfValues);
+            // generateRandomizedGraph();
+            location.reload();
         }); 
 
+        document.querySelector('.btn-faster').addEventListener('click', function(){
+            UICtrl.speedUp();
+        }); 
+
+        document.querySelector('.btn-slower').addEventListener('click', function(){
+            UICtrl.slowDown();
+        }); 
     };
 
     function swap(line1, line2){
@@ -65,6 +91,8 @@ var Controller = (function(UICtrl, appCtrl){
         
     }
     bubbleSort = async function(){
+        currentlyRunning = true;
+
         const length = data.values.length;
         
         for(let i = 0; i < length ; i++){
@@ -76,14 +104,21 @@ var Controller = (function(UICtrl, appCtrl){
             }
         }
 
+        currentlyRunning = false;
+        sorted = true;
     };
 
     quickSort = async function(start, end){
+        currentlyRunning = true;
+
         if(start < end){
             partFulfilled = await partition(data.values, start, end);        
             await quickSort(start, partFulfilled - 1);
             await quickSort(partFulfilled + 1, end);
         }           
+
+        currentlyRunning = false;
+        sorted = true;
     }
     
     async function partition(arr, start, end){
@@ -107,6 +142,8 @@ var Controller = (function(UICtrl, appCtrl){
     } 
 
     insertionSort = async function(){
+        currentlyRunning = true;
+
         const length = data.values.length;
 
         for(let i = 1; i< length; i++){
@@ -121,6 +158,9 @@ var Controller = (function(UICtrl, appCtrl){
             }
             // data.values[j + 1] = key;
         }
+
+        currentlyRunning = false;
+        sorted = true;
 
     }
 
@@ -180,6 +220,8 @@ var Controller = (function(UICtrl, appCtrl){
 */
 
     let heapSort = async function(){
+        currentlyRunning = true;
+
         const length = data.values.length;
 
         for(let i = Math.floor(length / 2) - 1; i >= 0; i-- ){
@@ -192,6 +234,8 @@ var Controller = (function(UICtrl, appCtrl){
             await heapify(i, 0);
         }
 
+        currentlyRunning = false;
+        sorted = true;
     }
 
     async function heapify(length, i){
