@@ -5,9 +5,9 @@ var UIController = (function(){
     const canvasBGColor = 'rgb(0,0,0)';
     const lineColor = 'rgb(0, 255, 0)';
     const markedLineColor = 'rgb(255, 0, 0)';
-    const lineWidth = 5;
+    const lineWidth = 3;
 
-    const delayTime = 2;
+    const delayTime = 5;
 
 
     return {

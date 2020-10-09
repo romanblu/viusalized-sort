@@ -4,13 +4,11 @@ var Controller = (function(UICtrl, appCtrl){
         values: []
     };
 
-    let delayTime = 5;
-
     let generateRandomizedGraph = function(){
         let line;
         let arr = [];
         // generate array of values
-        for(let i = 1; i<=200; i++){
+        for(let i = 1; i<= 200; i++){
             arr.push(i);
         }
 
@@ -33,10 +31,12 @@ var Controller = (function(UICtrl, appCtrl){
     
     let setupEventListeners = function(){
         document.querySelector('.btn').addEventListener('click', function(){
-            quickSort(0, data.values.length-1); 
+            heapSort(); 
+            console.log(data.values);
         });
 
-        // document.querySelector('.btn').addEventListener('click', bubbleSort);
+        // document.querySelector('.btn').addEventListener('click', quickSort);
+
     };
 
     function swap(line1, line2){
@@ -51,7 +51,7 @@ var Controller = (function(UICtrl, appCtrl){
 
         
     }
-    let bubbleSort = async function(){
+    bubbleSort = async function(){
         const length = data.values.length;
         
         for(let i = 0; i < length ; i++){
@@ -67,51 +67,144 @@ var Controller = (function(UICtrl, appCtrl){
 
     quickSort = async function(start, end){
         if(start < end){
-            let partitionIndex;
-            partFulfilled = await partition(data.values, start, end);
-            console.log(partFulfilled);
-            // partFulfilled.then((pi) => {
-            //     partitionIndex = pi;
-            // }).catch();
-            console.log('DONE TOO');
-
+            partFulfilled = await partition(data.values, start, end);        
             await quickSort(start, partFulfilled - 1);
             await quickSort(partFulfilled + 1, end);
-        }
+        }           
+    }
+    
+    async function partition(arr, start, end){
+        pivot = arr[end];
+        i = start - 1 // Index of smallest element
 
-        async function partition(arr, start, end){
-            pivot = arr[end];
-            i = start - 1 // Index of smallest element
-            
-
-            for(let j = start; j <= end - 1; j++){
-
-                if(arr[j].value < pivot.value){
-                    i++;
-                    if(i !== j){
-                        await UICtrl.swap(arr[i], arr[j]);
-                        swap(arr[i], arr[j]);
-                    }
-                    //  await UICtrl.swap(arr[i], arr[j]);
-                    // swap(arr[i], arr[j]);
-
+        for(let j = start; j <= end - 1; j++){
+            if(arr[j].value < pivot.value){
+                i++;
+                if(i !== j){
+                    await UICtrl.swap(arr[i], arr[j]);
+                    swap(arr[i], arr[j]);
                 }
             }
-            if(i !==  end - 1){
-                // await UICtrl.swap(arr[i + 1], arr[end]);
-                // swap(arr[i + 1], arr[end]);
-            }
-            await UICtrl.swap(arr[i + 1], arr[end]);
-            swap(arr[i + 1], arr[end]);
-
-            return i+1;
         }
-        console.log(data.values);
         
+        await UICtrl.swap(arr[i + 1], arr[end]);
+        swap(arr[i + 1], arr[end]);
+
+        return i+1;
+    } 
+
+    insertionSort = async function(){
+        const length = data.values.length;
+
+        for(let i = 1; i< length; i++){
+            let key = data.values[i];
+            let j = i - 1;
+
+            while(j >= 0 && data.values[j].value > key.value){
+                await UICtrl.swap(data.values[j+1], data.values[j]);
+                swap(data.values[j + 1], data.values[j])
+                // data.values[j+1] = data.values[j]; 
+                j = j-1;
+            }
+            // data.values[j + 1] = key;
+        }
+
+    }
+
+    
+    
+    /**
+     function merge(start, end, middle){
+        const lengthLeft = middle - start + 1; 
+        const lengthRight = end - middle ;
+        console.log(`start ${start} middle ${middle} end ${end}`);
+        // left = data.values.slice(0, middle);
+        // right = data.values.slice(middle);
+        left = [];
+        right = [];
+        mergeArr = [];
+
+        // for (let i = 0; i < lengthLeft; i++){ 
+        //     left[i] = data.values[start + i]; 
+        // }
+        // for (let j = 0; j < lengthRight; j++) {
+        //     right[j] = data.values[end + 1 + j]; 
+        // }
+        // console.log(`right length ${right.length}`);
+        // console.log(`left length ${left.length}`);
+
+        let i = j = 0;
+        let k = start;
+
+        while(i < lengthLeft && j < lengthRight){
+            if(data.values[start + i].value <= data.values[middle + j + 1].value){
+                mergeArr[k] = left[i];
+                i++;
+            } else{
+                mergeArr[k] = right[j];
+                j++;
+            }
+            k++;
+        }
+
+        while(i < lengthLeft){
+            mergeArr[k] = left[i];
+            i++;
+            k++;
+        }
+        
+        while(j < lengthRight){
+            mergeArr[k] = right[j];
+            j++;
+            k++;
+        }
+
+        for(let i= start; i< k; i++){
+            data.values[i] = mergeArr[i];
+        }
+
+    }
+*/
+
+    let heapSort = async function(){
+        const length = data.values.length;
+
+        for(let i = Math.floor(length / 2) - 1; i >= 0; i-- ){
+            await heapify(length, i);
+        }
+
+        for( let i = length -1; i > 0; i--){
+            await UICtrl.swap(data.values[0], data.values[i]);
+            swap(data.values[0], data.values[i]);
+            await heapify(i, 0);
+        }
+
+    }
+
+    async function heapify(length, i){
+        let largest = i;
+        let left = 2 * i + 1;
+        let right = 2 * i + 2;
+
+        if(left < length && data.values[left].value > data.values[largest].value){
+            largest = left;
+        }
+
+        if(right < length && data.values[right].value > data.values[largest].value){
+            largest = right;
+        }
+
+        if(largest !== i){
+            await UICtrl.swap(data.values[i], data.values[largest]);
+            swap(data.values[i], data.values[largest]);
+            await heapify(length, largest);
+        }
+
+
     }
 
     return{
-        init: function(){
+         init: function(){
             UICtrl.initCanvas(0, 200, 200);
             
             generateRandomizedGraph();
